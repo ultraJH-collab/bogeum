@@ -1,0 +1,8 @@
+{
+  "name": "bogeum",
+  "version": "1.0.0",
+  "private": true,
+  "description": "보금 — 빌라 전월세 안심 진단 · 직거래 · 사진 금고 · AI 문구 검토",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=20" }
+}

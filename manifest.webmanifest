@@ -1,0 +1,11 @@
+{
+  "name": "보금",
+  "short_name": "보금",
+  "description": "빌라 전월세 계약 전 진단 · 에스크로 직거래 · 사진 금고 · AI 문구 검토",
+  "start_url": "./#/home",
+  "display": "standalone",
+  "background_color": "#F1F4F1",
+  "theme_color": "#F1F4F1",
+  "lang": "ko",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
