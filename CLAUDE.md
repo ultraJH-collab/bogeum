@@ -11,8 +11,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Run: `node server.js` → http://localhost:5180 (`.claude/launch.json` entry `bogeum`). Loads `.env` via `process.loadEnvFile`.
 - Syntax check (no linter/bundler/tests): `node --check js/*.js api/ai.js server.js`
 - Engines headless: `node -e "global.window=global; require('./js/data.js'); require('./js/engines.js'); console.log(BG.eng.diagnose(BG.LISTINGS[2]))"`
-- Deploy: `npx vercel deploy --prod` (Vercel env: `OPENAI_API_KEY`, optional `OPENAI_MODEL`). In PowerShell `npx` is blocked by execution policy — use `npx.cmd` or Git Bash.
+- Deploy = push to `main` of the **public** repo https://github.com/ultraJH-collab/bogeum → Vercel (team `imsi`, project `bogeum`, preset "Other", no build) auto-deploys to https://bogeum.vercel.app. Per-deployment URLs (`bogeum-*-imsi.vercel.app`) sit behind Vercel Authentication; test against the production alias.
+- Vercel env vars (`OPENAI_API_KEY`, optional `OPENAI_MODEL`) are managed in the dashboard. Smoke test after a deploy: `curl https://bogeum.vercel.app/api/ai` → `{"ok":true,"ready":true}`; an unauthenticated POST must return 401.
+- Vercel CLI on this machine: the Windows hostname is Korean, which crashes `vercel login` ("Cannot convert argument to a ByteString"). Work around it with a preload that sets ASCII `os.hostname`/`os.userInfo` via `NODE_OPTIONS=--require <shim>.cjs`, kept at an ASCII path. Device login also demands an email code, so prefer the dashboard (logged in in the user's Chrome). In PowerShell `npx` is blocked by execution policy; use `npx.cmd` or Git Bash.
+- Commits use the GitHub noreply identity (`345055406+ultraJH-collab@users.noreply.github.com`, set in local git config). `gh` is not installed; GitHub API calls can use the token from `git credential fill`.
 - The in-app browser pane screenshots desktop emulation incorrectly (DPR 1.25); use Playwright MCP for desktop-width screenshots, and delete the `.playwright-mcp/` folder it writes into the project.
+- Schema changes: add a file under `supabase/migrations/` and apply it to project `vvngpbhapjdhcchyetxc` (Supabase MCP `apply_migration`).
 
 ## Architecture
 
@@ -28,4 +32,8 @@ Plain `<script>` tags sharing `window.BG`, loaded in order `config → data → 
 ## Conventions
 
 - Money in data/engines is 만원; display via `E.fmtMan` / `E.fmtWon`.
+- Values duplicated across layers must change together:
+  - Synced state keys: `SYNC_KEYS` in `js/account.js` and the `member_state.key` CHECK constraint in the migration.
+  - The 60/day AI limit: `bg_ai_use` in SQL, the quota error in `api/ai.js`, `GUIDE` in `api/ai.js`, and the price list in `viewMy`.
+- The Supabase publishable key in `js/config.js` and the fallback in `api/ai.js` are public by design. The OpenAI key lives only in `.env` (gitignored, local) and Vercel env.
 - Legal/financial copy is demo text and stays labeled as such.
